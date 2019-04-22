@@ -39,6 +39,7 @@ void TCP_CALL(){
 	close(sockfd);
 }
 void UDP_CALL(){
+while(1){
 	int sockfd; 
 	char buffer[MAXLINE]; 
 	char* message = "Hello From client"; 
@@ -50,30 +51,39 @@ void UDP_CALL(){
 		printf("socket creation failed"); 
 		exit(0); 
 	} 
-
+//	while(1){
 	memset(&servaddr, 0, sizeof(servaddr)); 
-
+	//while(1){
 	// Filling server information 
 	servaddr.sin_family = AF_INET; 
 	servaddr.sin_port = htons(PORT); 
 	servaddr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
-        printf("Test\n"); 
 	// send hello message to server 
+	//while(1){	
 	sendto(sockfd, (const char*)message, strlen(message), 
 		0, (const struct sockaddr*)&servaddr, 
 		sizeof(servaddr)); 
 	close(sockfd); 
-	return 0; 
+	sleep(10);
+	}
+	//return 0; 
 }
+//copy to here from code he posted reviever
+//void Broadcast__(
+//	int sock;
+//	struct
+//	braodcast
+//}
 int main() { 
 	pthread_t threads[2];
 	struct sockaddr_in servaddr, cli;
-	int tcpThread, udpThread;
+	int rc;
   	//Creating 2 threads
 	//for(int i = 0; i < 2; i++){
-	int* p;
-	tcpThread = pthread_create(&threads[0],NULL, TCP_CALL, (void*)(p));
-	udpThread = pthread_create(&threads[1],NULL, UDP_CALL, (void*)(p));
+	//pthread_attr_init(&attr);
+	rc = pthread_create(&threads[0],NULL, TCP_CALL, (void*)NULL);
+	rc = pthread_create(&threads[1],NULL, UDP_CALL, (void*)NULL);
+	//rc = pthread_create(&threads[2],NULL, Broadcast_reviever_call, (void*)NULL);
 	//}
 	//main thread waits until all threads are done
 	//for(int i =0; i < 2; i++){
