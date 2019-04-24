@@ -8,7 +8,7 @@
 #define PORT 5000 
 #define MAXLINE 1024 
 #define MAXRECVSTRING 255  /* Longest string to receive */
-void TCP_CALL(){
+void TCP_CALL(const char* file){
 	int sockfd; 
 	char buffer[MAXLINE]; 
 	char* message = "Hello Server"; 
@@ -32,40 +32,40 @@ void TCP_CALL(){
 		printf("\n Error : Connect Failed \n"); 
 	} 
 	memset(buffer, 0, sizeof(buffer)); 
-	strcpy(buffer, "Hello Server"); 
+	strcpy(buffer, file); 
 	write(sockfd, buffer, sizeof(buffer)); 
-	printf("Message from server: "); 
 	read(sockfd, buffer, sizeof(buffer)); 
+	printf("Message from server: "); 
 	puts(buffer); 
 	close(sockfd);
 }
 void UDP_CALL(){
-while(1){
-	int sockfd; 
-	char buffer[MAXLINE]; 
-	char* message = "Hello From client"; 
-	struct sockaddr_in servaddr; 
+	while(1){
+		int sockfd; 
+		char buffer[MAXLINE]; 
+		char* message = "Hello From client"; 
+		struct sockaddr_in servaddr; 
 
-	int n, len; 
-	// Creating socket file descriptor 
-	if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) { 
-		printf("socket creation failed"); 
-		exit(0); 
-	} 
-//	while(1){
-	memset(&servaddr, 0, sizeof(servaddr)); 
-	//while(1){
-	// Filling server information 
-	servaddr.sin_family = AF_INET; 
-	servaddr.sin_port = htons(PORT); 
-	servaddr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
-	// send hello message to server 
-	//while(1){	
-	sendto(sockfd, (const char*)message, strlen(message), 
-		0, (const struct sockaddr*)&servaddr, 
-		sizeof(servaddr)); 
-	close(sockfd); 
-	sleep(10);
+		int n, len; 
+		// Creating socket file descriptor 
+		if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) { 
+			printf("socket creation failed"); 
+			exit(0); 
+		} 
+		//while(1){
+		memset(&servaddr, 0, sizeof(servaddr)); 
+		//while(1){
+		// Filling server information 
+		servaddr.sin_family = AF_INET; 
+		servaddr.sin_port = htons(PORT); 
+		servaddr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
+		// send hello message to server 
+		//while(1){	
+		sendto(sockfd, (const char*)message, strlen(message), 
+			0, (const struct sockaddr*)&servaddr, 
+			sizeof(servaddr)); 
+		close(sockfd); 
+		sleep(10);
 	}
 	//return 0; 
 }
@@ -123,7 +123,7 @@ int main(int argc, char *argv[]) {
   	//Creating 2 threads
 	//for(int i = 0; i < 2; i++){
 	//pthread_attr_init(&attr);
-	rc = pthread_create(&threads[0],NULL, TCP_CALL, (void*)NULL);
+	rc = pthread_create(&threads[0],NULL, TCP_CALL, (void*)argv[1]);
 	rc = pthread_create(&threads[1],NULL, UDP_CALL, (void*)NULL);
 	//rc = pthread_create(&threads[2],NULL, Broadcast_reviever_call, (void*)NULL);
 	//}
