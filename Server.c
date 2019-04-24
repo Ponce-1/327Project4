@@ -6,11 +6,14 @@
 #include <stdio.h> 
 #include <stdlib.h> 
 #include <strings.h> 
+#include <vector>
+#include <string>
 #include <sys/socket.h> 
 #include <sys/types.h> 
 #include <unistd.h> 
 #define PORT 5000 
 #define MAXLINE 1024 
+using namespace std;
 int max(int x, int y) 
 { 
 	if (x > y) 
@@ -25,6 +28,7 @@ int main()
 	pid_t childpid; 
 	fd_set rset; 
 	ssize_t n; 
+	vector<string> files;
 	socklen_t len; 
 	const int on = 1; 
 	struct sockaddr_in cliaddr, servaddr; 
@@ -72,6 +76,9 @@ int main()
 				printf("Message From TCP client: "); 
 				read(connfd, buffer, sizeof(buffer)); 
 				puts(buffer); 
+				files.push_back(buffer);
+				
+				printf("%d", files.size());
 				write(connfd, (const char*)message, sizeof(buffer)); 
 				close(connfd); 
 				exit(0); 

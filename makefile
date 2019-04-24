@@ -1,4 +1,4 @@
-CC1=gcc -O3 -Wall -pthread
+CC1=g++ -O3 -Wall -pthread
 
 CFLAGS = -g -c -Wall
 #CFLAGS = -ansi -c -Wall -pedantic
