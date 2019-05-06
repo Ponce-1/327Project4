@@ -6,14 +6,22 @@
 #include <stdio.h> 
 #include <stdlib.h> 
 #include <strings.h> 
-#include <vector>
-#include <string>
 #include <sys/socket.h> 
 #include <sys/types.h> 
 #include <unistd.h> 
+#include <time.h>
+#include <string.h>
 #define PORT 5000 
 #define MAXLINE 1024 
-using namespace std;
+#define CLIENTNUM 3
+
+struct record // data structure to record files
+{
+	int userid;
+	char filename[1024];
+	struct tm * timestamp;	
+};
+
 int max(int x, int y) 
 { 
 	if (x > y) 
@@ -21,14 +29,16 @@ int max(int x, int y)
 	else
 		return y; 
 } 
+
 int main() 
-{ 
+{ 	
+	int id = 0; // incrementing id
+	struct record records[CLIENTNUM]; // array to hold client information
 	int listenfd, connfd, udpfd, nready, maxfdp1; 
 	char buffer[MAXLINE]; 
 	pid_t childpid; 
 	fd_set rset; 
 	ssize_t n; 
-	vector<string> files;
 	socklen_t len; 
 	const int on = 1; 
 	struct sockaddr_in cliaddr, servaddr; 
@@ -73,16 +83,36 @@ int main()
 			if ((childpid = fork()) == 0) { 
 				close(listenfd); 
 				bzero(buffer, sizeof(buffer)); 
-				printf("Message From TCP client: "); 
+				printf("Message From TCP client: ");
 				read(connfd, buffer, sizeof(buffer)); 
 				puts(buffer); 
-				files.push_back(buffer);
+
+				// Need to save filename, id, and timestamp for each connection
+				records[id].userid = id;
+				strncpy(records[id].filename, buffer, sizeof(buffer)); // save filename
+				time_t rawtime;
+				struct tm *timeinfo;
+				time( &rawtime );
+				timeinfo = localtime( &rawtime );	
+				records[id].timestamp = timeinfo;
+				////
+				char buf[1024];
+				//itoa(records[id].userid, buf, 10);
+				sprintf(buf, "%d", records[id].userid);
+				write(connfd, buf, sizeof(buf));//records[id].userid, sizeof((const char*)records[id].userid)); 
 				
-				printf("%d", files.size());
-				write(connfd, (const char*)message, sizeof(buffer)); 
+				////////
+				printf("%d", records[id].userid);
+				printf("%s", records[id].filename);
+				printf("%s", asctime(records[id].timestamp));
 				close(connfd); 
+				////////
+
 				exit(0); 
 			} 
+			///
+			id = id + 1;
+			///
 			close(connfd); 
 		} 
 		// if udp socket is readable receive the message. 
@@ -98,3 +128,4 @@ int main()
 		} 
 	} 
 } 
+
